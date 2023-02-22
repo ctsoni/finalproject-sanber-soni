@@ -50,6 +50,7 @@ func main() {
 
 	r.POST("/users/register", userHandler.RegisterUser)
 	r.POST("/users/login", userHandler.Login)
+	r.PUT("/users/edit/:user_id", userHandler.UpdateUser)
 
 	r.Run("127.0.0.1:8080")
 }

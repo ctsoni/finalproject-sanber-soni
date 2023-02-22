@@ -35,18 +35,34 @@ func APIResponse(message string, code int, status string, data interface{}) Resp
 }
 
 type UserResponseFormat struct {
-	ID    int
-	Name  string
-	Email string
-	Token string
+	ID       int
+	FullName string
+	Email    string
+	Token    string
 }
 
 func FormatUserResponse(user entity.Users, token string) UserResponseFormat {
 	response := UserResponseFormat{
-		ID:    user.ID,
-		Name:  user.FullName,
-		Email: user.Email,
-		Token: token,
+		ID:       user.ID,
+		FullName: user.FullName,
+		Email:    user.Email,
+		Token:    token,
+	}
+
+	return response
+}
+
+type UserEditResponseFormat struct {
+	ID       int
+	FullName string
+	Email    string
+}
+
+func FormatUserEditResponse(user entity.Users) UserEditResponseFormat {
+	response := UserEditResponseFormat{
+		ID:       user.ID,
+		FullName: user.FullName,
+		Email:    user.Email,
 	}
 
 	return response

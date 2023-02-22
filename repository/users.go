@@ -3,12 +3,15 @@ package repository
 import (
 	"database/sql"
 	"finalproject-sanber-soni/entity"
+	"time"
 )
 
 // UserRepository is contract to interact with database
 type UserRepository interface {
 	Save(user entity.Users) (entity.Users, error)
 	FindByEmail(email string) (entity.Users, bool, error)
+	FindById(id int) (entity.Users, error)
+	Update(user entity.Users) (entity.Users, error)
 }
 
 // userRepository is object that has db *sql.DB value
@@ -61,4 +64,43 @@ func (r *userRepository) FindByEmail(email string) (entity.Users, bool, error) {
 	}
 
 	return user, true, nil
+}
+
+// FindById is userRepository method to search user id and return all its information
+func (r *userRepository) FindById(id int) (entity.Users, error) {
+	var user entity.Users
+
+	sqlStatement := `SELECT id, full_name, email, password_hash FROM users WHERE id = $1`
+	err := r.db.QueryRow(sqlStatement, id).Scan(&user.ID, &user.FullName, &user.Email, &user.PasswordHash)
+	if err != nil {
+		return user, err
+	}
+
+	return user, nil
+}
+
+// Update is userRepository method to update user information by id
+func (r *userRepository) Update(user entity.Users) (entity.Users, error) {
+
+	sqlStatement := `
+	UPDATE users
+	SET full_name=$2, email=$3, password_hash=$4, updated_at=$5
+	WHERE id = $1
+	RETURNING id, full_name, email`
+
+	err := r.db.QueryRow(
+		sqlStatement,
+		user.ID,
+		user.FullName,
+		user.Email,
+		user.PasswordHash,
+		time.Now()).Scan(
+		&user.ID,
+		&user.FullName,
+		&user.Email)
+	if err != nil {
+		return user, err
+	}
+
+	return user, nil
 }

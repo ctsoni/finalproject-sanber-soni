@@ -7,6 +7,7 @@ import (
 	"finalproject-sanber-soni/service"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 )
 
 // userHandler is object that has userService field with type of service.userService interface contract
@@ -101,11 +102,56 @@ func (h *userHandler) Login(ctx *gin.Context) {
 			http.StatusBadRequest,
 			"error",
 			errorMessage)
-		ctx.JSON(http.StatusBadGateway, response)
+		ctx.JSON(http.StatusBadRequest, response)
 		return
 	}
 
 	format := helper.FormatUserResponse(user, token)
 	response := helper.APIResponse("Login success", http.StatusOK, "success", format)
+	ctx.JSON(http.StatusOK, response)
+}
+
+func (h *userHandler) UpdateUser(ctx *gin.Context) {
+	var input entity.InputUpdateUser
+
+	userId, err := strconv.Atoi(ctx.Param("user_id"))
+	if err != nil {
+		errorMessage := gin.H{"error": err.Error()}
+		response := helper.APIResponse(
+			"Update failed",
+			http.StatusBadRequest,
+			"error",
+			errorMessage)
+		ctx.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	err = ctx.ShouldBindJSON(&input)
+	if err != nil {
+		errors := helper.FormatError(err)
+		errorMessage := gin.H{"error": errors}
+		response := helper.APIResponse(
+			"Update failed",
+			http.StatusUnprocessableEntity,
+			"error",
+			errorMessage)
+		ctx.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+
+	updatedUser, err := h.userService.UpdateUser(userId, input)
+	if err != nil {
+		errorMessage := gin.H{"error": err.Error()}
+		response := helper.APIResponse(
+			"Update failed",
+			http.StatusBadRequest,
+			"error",
+			errorMessage)
+		ctx.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	msg := helper.FormatUserEditResponse(updatedUser)
+	response := helper.APIResponse("Update success", http.StatusOK, "success", msg)
 	ctx.JSON(http.StatusOK, response)
 }

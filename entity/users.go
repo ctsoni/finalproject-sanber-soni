@@ -22,3 +22,9 @@ type InputLogin struct {
 	Email    string `json:"email" binding:"required,email"`
 	Password string `json:"password" binding:"required"`
 }
+
+type InputUpdateUser struct {
+	FullName string `json:"full_name"`
+	Email    string `json:"email" binding:"email"`
+	Password string `json:"password"`
+}

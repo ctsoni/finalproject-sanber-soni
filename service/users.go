@@ -11,6 +11,7 @@ import (
 type UserService interface {
 	RegisterUser(input entity.InputRegisterUsers) (entity.Users, error)
 	Login(input entity.InputLogin) (entity.Users, error)
+	UpdateUser(id int, input entity.InputUpdateUser) (entity.Users, error)
 }
 
 // userService is object that has userRepository field with type repository.UserRepository interface contract
@@ -81,4 +82,44 @@ func (s *userService) Login(input entity.InputLogin) (entity.Users, error) {
 	}
 
 	return user, nil
+}
+
+// UpdateUser is userService method to update user information by user id
+func (s *userService) UpdateUser(id int, input entity.InputUpdateUser) (entity.Users, error) {
+	user, err := s.userRepository.FindById(id)
+	if err != nil {
+		return user, errors.New("user with id not found")
+	}
+
+	if input.FullName != "" {
+		user.FullName = input.FullName
+	}
+	if input.Email != "" {
+		// email validation if email exist
+		_, emailExist, err := s.userRepository.FindByEmail(input.Email)
+		if err != nil {
+			return user, err
+		}
+
+		// if email exist return new error
+		if emailExist {
+			return user, errors.New("email already exist")
+		}
+
+		user.Email = input.Email
+	}
+	if input.Password != "" {
+		passwordHash, err := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.MinCost)
+		if err != nil {
+			return user, err
+		}
+		user.PasswordHash = string(passwordHash)
+	}
+
+	updatedUser, err := s.userRepository.Update(user)
+	if err != nil {
+		return updatedUser, err
+	}
+
+	return updatedUser, nil
 }
