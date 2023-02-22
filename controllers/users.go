@@ -7,7 +7,6 @@ import (
 	"finalproject-sanber-soni/service"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"strconv"
 )
 
 // userHandler is object that has userService field with type of service.userService interface contract
@@ -114,19 +113,10 @@ func (h *userHandler) Login(ctx *gin.Context) {
 func (h *userHandler) UpdateUser(ctx *gin.Context) {
 	var input entity.InputUpdateUser
 
-	userId, err := strconv.Atoi(ctx.Param("user_id"))
-	if err != nil {
-		errorMessage := gin.H{"error": err.Error()}
-		response := helper.APIResponse(
-			"Update failed",
-			http.StatusBadRequest,
-			"error",
-			errorMessage)
-		ctx.JSON(http.StatusBadRequest, response)
-		return
-	}
+	// obtain current user from token
+	currentUser := ctx.MustGet("currentUser").(entity.Users)
 
-	err = ctx.ShouldBindJSON(&input)
+	err := ctx.ShouldBindJSON(&input)
 	if err != nil {
 		errors := helper.FormatError(err)
 		errorMessage := gin.H{"error": errors}
@@ -139,7 +129,7 @@ func (h *userHandler) UpdateUser(ctx *gin.Context) {
 		return
 	}
 
-	updatedUser, err := h.userService.UpdateUser(userId, input)
+	updatedUser, err := h.userService.UpdateUser(currentUser.ID, input)
 	if err != nil {
 		errorMessage := gin.H{"error": err.Error()}
 		response := helper.APIResponse(

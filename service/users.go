@@ -12,6 +12,7 @@ type UserService interface {
 	RegisterUser(input entity.InputRegisterUsers) (entity.Users, error)
 	Login(input entity.InputLogin) (entity.Users, error)
 	UpdateUser(id int, input entity.InputUpdateUser) (entity.Users, error)
+	GetUserById(id int) (entity.Users, error)
 }
 
 // userService is object that has userRepository field with type repository.UserRepository interface contract
@@ -96,10 +97,7 @@ func (s *userService) UpdateUser(id int, input entity.InputUpdateUser) (entity.U
 	}
 	if input.Email != "" {
 		// email validation if email exist
-		_, emailExist, err := s.userRepository.FindByEmail(input.Email)
-		if err != nil {
-			return user, err
-		}
+		_, emailExist, _ := s.userRepository.FindByEmail(input.Email)
 
 		// if email exist return new error
 		if emailExist {
@@ -122,4 +120,17 @@ func (s *userService) UpdateUser(id int, input entity.InputUpdateUser) (entity.U
 	}
 
 	return updatedUser, nil
+}
+
+func (s *userService) GetUserById(id int) (entity.Users, error) {
+	user, err := s.userRepository.FindById(id)
+	if err != nil {
+		return user, errors.New("user not found with that id")
+	}
+
+	if user.ID == 0 {
+		return user, errors.New("user not found with that id")
+	}
+
+	return user, nil
 }

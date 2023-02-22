@@ -70,8 +70,15 @@ func (r *userRepository) FindByEmail(email string) (entity.Users, bool, error) {
 func (r *userRepository) FindById(id int) (entity.Users, error) {
 	var user entity.Users
 
-	sqlStatement := `SELECT id, full_name, email, password_hash FROM users WHERE id = $1`
-	err := r.db.QueryRow(sqlStatement, id).Scan(&user.ID, &user.FullName, &user.Email, &user.PasswordHash)
+	sqlStatement := `SELECT id, full_name, email, password_hash, is_admin FROM users WHERE id = $1`
+	err := r.db.QueryRow(
+		sqlStatement,
+		id).Scan(
+		&user.ID,
+		&user.FullName,
+		&user.Email,
+		&user.PasswordHash,
+		&user.IsAdmin)
 	if err != nil {
 		return user, err
 	}

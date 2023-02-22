@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"finalproject-sanber-soni/auth"
 	"finalproject-sanber-soni/controllers"
 	"finalproject-sanber-soni/database"
 	"finalproject-sanber-soni/repository"
@@ -50,7 +51,7 @@ func main() {
 
 	r.POST("/users/register", userHandler.RegisterUser)
 	r.POST("/users/login", userHandler.Login)
-	r.PUT("/users/edit/:user_id", userHandler.UpdateUser)
+	r.PUT("/users/edit", auth.MiddlewareUserAuth(userService), userHandler.UpdateUser)
 
 	r.Run("127.0.0.1:8080")
 }
