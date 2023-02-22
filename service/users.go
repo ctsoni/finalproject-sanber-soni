@@ -13,6 +13,8 @@ type UserService interface {
 	Login(input entity.InputLogin) (entity.Users, error)
 	UpdateUser(id int, input entity.InputUpdateUser) (entity.Users, error)
 	GetUserById(id int) (entity.Users, error)
+	DeleteUser(id int) error
+	GetAll(isAdmin bool) ([]entity.Users, error)
 }
 
 // userService is object that has userRepository field with type repository.UserRepository interface contract
@@ -40,10 +42,7 @@ func (s *userService) RegisterUser(input entity.InputRegisterUsers) (entity.User
 	user.PasswordHash = string(passwordHash)
 
 	// checking if email already exist
-	_, emailExist, err := s.userRepository.FindByEmail(user.Email)
-	if err != nil {
-		return user, err
-	}
+	_, emailExist, _ := s.userRepository.FindByEmail(user.Email)
 
 	// if email not available or email already exist
 	if emailExist {
@@ -133,4 +132,32 @@ func (s *userService) GetUserById(id int) (entity.Users, error) {
 	}
 
 	return user, nil
+}
+
+func (s *userService) DeleteUser(id int) error {
+	user, err := s.userRepository.FindById(id)
+	if err != nil {
+		return errors.New("user with id not found")
+	}
+
+	err = s.userRepository.Delete(user)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *userService) GetAll(isAdmin bool) ([]entity.Users, error) {
+	if !isAdmin {
+		return nil, errors.New("you're not authorized")
+	}
+
+	users, err := s.userRepository.GetAll()
+
+	if err != nil {
+		return users, err
+	}
+
+	return users, nil
 }

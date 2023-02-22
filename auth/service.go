@@ -3,16 +3,20 @@ package auth
 import (
 	"errors"
 	"github.com/golang-jwt/jwt/v4"
+	"time"
 )
 
 var SECRET_KEY = []byte("SeECre3t_K3y_T0k3n_f1n4L_PR0j3Ct")
 
-// GenerateToken in function to generate JWT token with userID and isAdmin as payload
+// GenerateToken in function to generate JWT token with userID, isAdmin, time issued ant time exp as payload
 // and SECRET_KEY as its secret key
 func GenerateToken(userID int, isAdmin bool) (string, error) {
-	payload := jwt.MapClaims{}
-	payload["user_id"] = userID
-	payload["isAdmin"] = isAdmin
+	payload := jwt.MapClaims{
+		"user_id": userID,
+		"isAdmin": isAdmin,
+		"iat":     jwt.NewNumericDate(time.Now()),
+		"exp":     jwt.NewNumericDate(time.Now().Add(3 * time.Minute)),
+	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, payload)
 	signedToken, err := token.SignedString(SECRET_KEY)

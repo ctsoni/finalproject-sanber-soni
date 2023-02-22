@@ -145,3 +145,42 @@ func (h *userHandler) UpdateUser(ctx *gin.Context) {
 	response := helper.APIResponse("Update success", http.StatusOK, "success", msg)
 	ctx.JSON(http.StatusOK, response)
 }
+
+func (h *userHandler) DeleteUser(ctx *gin.Context) {
+	currentUser := ctx.MustGet("currentUser").(entity.Users)
+	err := h.userService.DeleteUser(currentUser.ID)
+	if err != nil {
+		errorMessage := gin.H{"error": err.Error()}
+		response := helper.APIResponse(
+			"Delete failed",
+			http.StatusBadRequest,
+			"error",
+			errorMessage)
+		ctx.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	msg := gin.H{"message": "user has been deleted"}
+	response := helper.APIResponse("Delete success", http.StatusOK, "success", msg)
+	ctx.JSON(http.StatusOK, response)
+}
+
+func (h *userHandler) GetAllUsers(ctx *gin.Context) {
+	currentUser := ctx.MustGet("currentUser").(entity.Users)
+
+	users, err := h.userService.GetAll(currentUser.IsAdmin)
+	if err != nil {
+		errorMessage := gin.H{"error": err.Error()}
+		response := helper.APIResponse(
+			"Get all users failed",
+			http.StatusUnauthorized,
+			"error",
+			errorMessage)
+		ctx.JSON(http.StatusUnauthorized, response)
+		return
+	}
+
+	msg := helper.FormatUserGetAllResponse(users)
+	response := helper.APIResponse("Get all users success", http.StatusOK, "success", msg)
+	ctx.JSON(http.StatusOK, response)
+}

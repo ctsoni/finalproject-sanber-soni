@@ -27,14 +27,14 @@ func MiddlewareUserAuth(userService service.UserService) gin.HandlerFunc {
 
 		token, err := ValidateToken(tokenString)
 		if err != nil {
-			response := helper.APIResponse("Unauthorized", http.StatusUnauthorized, "error", nil)
+			response := helper.APIResponse("Unauthorized", http.StatusUnauthorized, "error", err.Error())
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, response)
 			return
 		}
 
 		payload, ok := token.Claims.(jwt.MapClaims)
 		if !ok || !token.Valid {
-			response := helper.APIResponse("Unauthorized", http.StatusUnauthorized, "error", nil)
+			response := helper.APIResponse("Unauthorized", http.StatusUnauthorized, "error", err.Error())
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, response)
 			return
 		}
@@ -43,7 +43,7 @@ func MiddlewareUserAuth(userService service.UserService) gin.HandlerFunc {
 
 		user, err := userService.GetUserById(userID)
 		if err != nil {
-			response := helper.APIResponse("Unauthorized", http.StatusUnauthorized, "error", nil)
+			response := helper.APIResponse("Unauthorized", http.StatusUnauthorized, "error", err.Error())
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, response)
 			return
 		}

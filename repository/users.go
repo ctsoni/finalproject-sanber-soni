@@ -12,6 +12,8 @@ type UserRepository interface {
 	FindByEmail(email string) (entity.Users, bool, error)
 	FindById(id int) (entity.Users, error)
 	Update(user entity.Users) (entity.Users, error)
+	Delete(user entity.Users) error
+	GetAll() ([]entity.Users, error)
 }
 
 // userRepository is object that has db *sql.DB value
@@ -110,4 +112,48 @@ func (r *userRepository) Update(user entity.Users) (entity.Users, error) {
 	}
 
 	return user, nil
+}
+
+func (r *userRepository) Delete(user entity.Users) error {
+	sqlStatement := `
+	DELETE FROM users
+	WHERE id = $1`
+
+	err := r.db.QueryRow(sqlStatement, user.ID).Err()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *userRepository) GetAll() ([]entity.Users, error) {
+	var result []entity.Users
+
+	sqlStatement := `SELECT * FROM users`
+	rows, err := r.db.Query(sqlStatement)
+	if err != nil {
+		return result, err
+	}
+
+	defer rows.Close()
+	for rows.Next() {
+		var user entity.Users
+		err = rows.Scan(
+			&user.ID,
+			&user.FullName,
+			&user.Email,
+			&user.PasswordHash,
+			&user.IsAdmin,
+			&user.CreatedAt,
+			&user.UpdatedAt)
+		if err != nil {
+			return result, err
+		}
+		if !user.IsAdmin {
+			result = append(result, user)
+		}
+	}
+
+	return result, nil
 }

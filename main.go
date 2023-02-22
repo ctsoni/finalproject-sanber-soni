@@ -49,9 +49,13 @@ func main() {
 
 	r := gin.Default()
 
+	// all user
 	r.POST("/users/register", userHandler.RegisterUser)
 	r.POST("/users/login", userHandler.Login)
 	r.PUT("/users/edit", auth.MiddlewareUserAuth(userService), userHandler.UpdateUser)
+	r.DELETE("/users/delete", auth.MiddlewareUserAuth(userService), userHandler.DeleteUser)
+	// admin
+	r.GET("/users/get-all-users", auth.MiddlewareUserAuth(userService), userHandler.GetAllUsers)
 
 	r.Run("127.0.0.1:8080")
 }

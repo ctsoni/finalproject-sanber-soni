@@ -3,6 +3,7 @@ package helper
 import (
 	"finalproject-sanber-soni/entity"
 	"github.com/go-playground/validator/v10"
+	"time"
 )
 
 func FormatError(err error) []string {
@@ -63,6 +64,46 @@ func FormatUserEditResponse(user entity.Users) UserEditResponseFormat {
 		ID:       user.ID,
 		FullName: user.FullName,
 		Email:    user.Email,
+	}
+
+	return response
+}
+
+type UserGetAllFormat struct {
+	ID                   int
+	FullName, Email      string
+	CreatedAt, UpdatedAt time.Time
+}
+
+func FormatUserGetAllResponse(users []entity.Users) []UserGetAllFormat {
+	var response []UserGetAllFormat
+	for _, user := range users {
+		res := UserGetAllFormat{
+			ID:        user.ID,
+			FullName:  user.FullName,
+			Email:     user.Email,
+			CreatedAt: user.CreatedAt,
+			UpdatedAt: user.UpdatedAt,
+		}
+		response = append(response, res)
+	}
+
+	return response
+}
+
+type CatGetAllFormat struct {
+	ID   int
+	Name string
+}
+
+func FormatCatGetAllResponse(cats []entity.Categories) []CatGetAllFormat {
+	var response []CatGetAllFormat
+	for _, cat := range cats {
+		res := CatGetAllFormat{
+			ID:   cat.Id,
+			Name: cat.Name,
+		}
+		response = append(response, res)
 	}
 
 	return response
