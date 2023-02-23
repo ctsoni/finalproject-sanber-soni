@@ -15,7 +15,7 @@ func GenerateToken(userID int, isAdmin bool) (string, error) {
 		"user_id": userID,
 		"isAdmin": isAdmin,
 		"iat":     jwt.NewNumericDate(time.Now()),
-		"exp":     jwt.NewNumericDate(time.Now().Add(3 * time.Minute)),
+		"exp":     jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, payload)

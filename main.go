@@ -43,19 +43,32 @@ func main() {
 	database.DbMigrate(db)
 	defer db.Close()
 
+	r := gin.Default()
+
+	// user endpoint handler
 	userRepository := repository.NewUserRepository(db)
 	userService := service.NewUserService(userRepository)
 	userHandler := controllers.NewUserHandler(userService)
-
-	r := gin.Default()
-
+	users := r.Group("/users")
 	// all user
-	r.POST("/users/register", userHandler.RegisterUser)
-	r.POST("/users/login", userHandler.Login)
-	r.PUT("/users/edit", auth.MiddlewareUserAuth(userService), userHandler.UpdateUser)
-	r.DELETE("/users/delete", auth.MiddlewareUserAuth(userService), userHandler.DeleteUser)
+	users.POST("/register", userHandler.RegisterUser)
+	users.POST("/login", userHandler.Login)
+	users.PUT("/edit", auth.MiddlewareUserAuth(userService), userHandler.UpdateUser)
+	users.DELETE("/delete", auth.MiddlewareUserAuth(userService), userHandler.DeleteUser)
 	// admin
-	r.GET("/users/get-all-users", auth.MiddlewareUserAuth(userService), userHandler.GetAllUsers)
+	users.GET("/get-all-users", auth.MiddlewareUserAuth(userService), userHandler.GetAllUsers)
 
+	// categories endpoint handler
+	categoryRepository := repository.NewCategoriesRepository(db)
+	categoryService := service.NewCategoryService(categoryRepository)
+	categoryHandler := controllers.NewCatHandler(categoryService)
+	category := r.Group("/category")
+	// all user
+	category.GET("/get-all", categoryHandler.GetAllCategories)
+	category.GET("/:category_id/items", categoryHandler.GetAllInventoriesByCatId)
+	// admin
+	category.POST("/add", auth.MiddlewareUserAuth(userService), categoryHandler.InsertCategory)
+	category.PUT("/edit/:category_id", auth.MiddlewareUserAuth(userService), categoryHandler.UpdateCategory)
+	category.DELETE("/delete/:category_id", auth.MiddlewareUserAuth(userService), categoryHandler.DeleteCategories)
 	r.Run("127.0.0.1:8080")
 }

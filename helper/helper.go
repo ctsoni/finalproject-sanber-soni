@@ -96,7 +96,7 @@ type CatGetAllFormat struct {
 	Name string
 }
 
-func FormatCatGetAllResponse(cats []entity.Categories) []CatGetAllFormat {
+func FormatCatGetAllResponse(cats []entity.Category) []CatGetAllFormat {
 	var response []CatGetAllFormat
 	for _, cat := range cats {
 		res := CatGetAllFormat{
@@ -104,6 +104,49 @@ func FormatCatGetAllResponse(cats []entity.Categories) []CatGetAllFormat {
 			Name: cat.Name,
 		}
 		response = append(response, res)
+	}
+
+	return response
+}
+
+type CatInvenGetFormat struct {
+	ID, CatID         int
+	Name, Description string
+	IsAvailable       bool
+}
+
+func FormatCatInvenGetResponse(invens []entity.Inventory) []CatInvenGetFormat {
+	var response []CatInvenGetFormat
+	for _, inven := range invens {
+		res := CatInvenGetFormat{
+			ID:          inven.Id,
+			CatID:       inven.CatId,
+			Name:        inven.Name,
+			Description: inven.Description,
+			IsAvailable: inven.IsAvailable,
+		}
+		response = append(response, res)
+	}
+
+	return response
+}
+
+type InventoryFormat struct {
+	ID, CatID               int
+	Name, Description       string
+	IsAvailable             bool
+	StockUnit, PricePerUnit int
+}
+
+func FormatInventorySaveResponse(inventory entity.Inventory, stock entity.Stock) InventoryFormat {
+	response := InventoryFormat{
+		ID:           inventory.Id,
+		CatID:        inventory.CatId,
+		Name:         inventory.Name,
+		Description:  inventory.Description,
+		IsAvailable:  inventory.IsAvailable,
+		StockUnit:    stock.StockUnit,
+		PricePerUnit: stock.PricePerUnit,
 	}
 
 	return response
