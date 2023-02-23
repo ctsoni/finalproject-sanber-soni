@@ -27,7 +27,7 @@ func (s *inventoryService) AddItem(input entity.InputInventory, isAdmin bool) (e
 		return entity.Inventory{}, entity.Stock{}, errors.New("you're not authorize")
 	}
 
-	found, _ := s.repository.FindByName(input.Name)
+	_, found, _ := s.repository.FindByName(input.Name)
 	if found {
 		return entity.Inventory{}, entity.Stock{}, errors.New("name already exist")
 	}
@@ -41,29 +41,24 @@ func (s *inventoryService) AddItem(input entity.InputInventory, isAdmin bool) (e
 }
 
 func (s *inventoryService) UpdateItem(input entity.UpdateInventory, isAdmin bool, id int) (entity.Inventory, entity.Stock, error) {
-	var realInput entity.UpdateInventory
-
 	if !isAdmin {
 		return entity.Inventory{}, entity.Stock{}, errors.New("you're not authorized")
 	}
 
-	idExsit, _ := s.repository.FindById(id)
+	realInput, idExsit, _ := s.repository.FindById(id)
 	if !idExsit {
 		return entity.Inventory{}, entity.Stock{}, errors.New("inventory id not found")
 	}
 
-	found, _ := s.repository.FindByName(input.Name)
-	if found {
-		return entity.Inventory{}, entity.Stock{}, errors.New("name already exist")
-	}
-
-	realInput.Id = id
-
-	if input.CatId != 0 {
+	if input.CatId != realInput.CatId {
 		realInput.CatId = input.CatId
 	}
 
 	if input.Name != "" {
+		_, found, _ := s.repository.FindByName(input.Name)
+		if found {
+			return entity.Inventory{}, entity.Stock{}, errors.New("name already exist")
+		}
 		realInput.Name = input.Name
 	}
 
@@ -71,13 +66,15 @@ func (s *inventoryService) UpdateItem(input entity.UpdateInventory, isAdmin bool
 		realInput.Description = input.Description
 	}
 
-	realInput.IsAvailable = input.IsAvailable
+	if realInput.IsAvailable != input.IsAvailable {
+		realInput.IsAvailable = input.IsAvailable
+	}
 
-	if input.StockUnit != 0 {
+	if input.StockUnit != realInput.StockUnit {
 		realInput.StockUnit = input.StockUnit
 	}
 
-	if input.PricePerUnit != 0 {
+	if input.PricePerUnit != realInput.PricePerUnit {
 		realInput.PricePerUnit = input.PricePerUnit
 	}
 
@@ -96,7 +93,7 @@ func (s *inventoryService) DeleteItem(isAdmin bool, id int) error {
 		return errors.New("you're not authorized")
 	}
 
-	idExist, _ := s.repository.FindById(id)
+	_, idExist, _ := s.repository.FindById(id)
 	if !idExist {
 		return errors.New("inventory id not found")
 	}
@@ -121,7 +118,7 @@ func (s *inventoryService) GetAll() ([]entity.InputInventory, error) {
 }
 
 func (s *inventoryService) GetById(id int) (entity.InputInventory, error) {
-	idExist, _ := s.repository.FindById(id)
+	_, idExist, _ := s.repository.FindById(id)
 	if !idExist {
 		return entity.InputInventory{}, errors.New("inventory id not found")
 	}

@@ -70,5 +70,32 @@ func main() {
 	category.POST("/add", auth.MiddlewareUserAuth(userService), categoryHandler.InsertCategory)
 	category.PUT("/edit/:category_id", auth.MiddlewareUserAuth(userService), categoryHandler.UpdateCategory)
 	category.DELETE("/delete/:category_id", auth.MiddlewareUserAuth(userService), categoryHandler.DeleteCategories)
+
+	// invenotry endpoint handler
+	inventoryRepository := repository.NewInventoryRepository(db)
+	inventoryService := service.NewInventoryService(inventoryRepository)
+	inventoryHandler := controllers.NewInventoryHandler(inventoryService)
+	inventory := r.Group("/inventory")
+	// all user
+	inventory.GET("/get-all", inventoryHandler.GetAll)
+	inventory.GET("/get/:inven_id", inventoryHandler.GetById)
+	// admin
+	inventory.POST("/add", auth.MiddlewareUserAuth(userService), inventoryHandler.InsertInventory)
+	inventory.PUT("/edit/:inven_id", auth.MiddlewareUserAuth(userService), inventoryHandler.UpdateInventory)
+	inventory.DELETE("/delete/:inven_id", auth.MiddlewareUserAuth(userService), inventoryHandler.DeleteInventory)
+
+	// transactions endpoint handler
+	transactionRepository := repository.NewTransactionRepository(db)
+	transactionService := service.NewTransactionService(transactionRepository)
+	transactionHandler := controllers.NewTransactionHandler(transactionService)
+	transaction := users.Group("/transaction")
+	// user
+	transaction.GET("/get-all", auth.MiddlewareUserAuth(userService), transactionHandler.GetAll)
+	// /get?status=Paid
+	transaction.GET("/get", auth.MiddlewareUserAuth(userService), transactionHandler.GetByStatus)
+	transaction.POST("/create", auth.MiddlewareUserAuth(userService), transactionHandler.CreateTransaction)
+	// misal /1?action=pay atau /1?action=cancel
+	transaction.PUT("/:trans_id", auth.MiddlewareUserAuth(userService), transactionHandler.UpdateTransaction)
+	transaction.PUT("/admin/:trans_id", auth.MiddlewareUserAuth(userService), transactionHandler.UpdateAdmin)
 	r.Run("127.0.0.1:8080")
 }

@@ -13,6 +13,10 @@ type InventoryHandler struct {
 	service service.InventoryService
 }
 
+func NewInventoryHandler(inventoryService service.InventoryService) *InventoryHandler {
+	return &InventoryHandler{inventoryService}
+}
+
 func (h *InventoryHandler) InsertInventory(ctx *gin.Context) {
 	var inputInventory entity.InputInventory
 	currentUser := ctx.MustGet("currentUser").(entity.Users)

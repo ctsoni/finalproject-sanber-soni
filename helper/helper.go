@@ -151,3 +151,37 @@ func FormatInventorySaveResponse(inventory entity.Inventory, stock entity.Stock)
 
 	return response
 }
+
+type OutputTransaction struct {
+	Information string
+	Id          int
+	UserId      int
+	Item        string
+	Unit        int
+	TotalPrice  int
+	Status      string
+	StartAt     time.Time
+	FinishAt    time.Time
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+	ExpiredAt   time.Time
+}
+
+func FormatTransactionResponse(transaction entity.Transaction, item string, info string) OutputTransaction {
+	response := OutputTransaction{
+		Information: info,
+		Id:          transaction.Id,
+		UserId:      transaction.UserId,
+		Item:        item,
+		Unit:        transaction.Unit,
+		TotalPrice:  transaction.TotalPrice,
+		Status:      transaction.Status,
+		StartAt:     transaction.StartAt,
+		FinishAt:    transaction.FinishAt,
+		CreatedAt:   transaction.CreatedAt,
+		UpdatedAt:   transaction.UpdatedAt,
+		ExpiredAt:   transaction.ExpiredAt,
+	}
+
+	return response
+}

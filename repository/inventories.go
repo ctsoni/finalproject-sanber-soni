@@ -8,9 +8,9 @@ import (
 
 type InventoryRepository interface {
 	Save(inputInventory entity.InputInventory) (entity.Inventory, entity.Stock, error)
-	FindById(id int) (bool, error)
-	FindByName(name string) (bool, error)
-	Update(inputInventory entity.UpdateInventory) (entity.Inventory, entity.Stock, error)
+	FindById(id int) (entity.InventoryStock, bool, error)
+	FindByName(name string) (entity.Inventory, bool, error)
+	Update(inputInventory entity.InventoryStock) (entity.Inventory, entity.Stock, error)
 	Delete(inventory entity.Inventory) error
 	GetAll() ([]entity.InputInventory, error)
 	GetById(id int) (entity.InputInventory, error)
@@ -67,27 +67,49 @@ func (r *inventoryRepository) Save(inputInventory entity.InputInventory) (entity
 	return inventory, stock, nil
 }
 
-func (r *inventoryRepository) FindById(id int) (bool, error) {
-	sqlStatement := `SELECT * FROM inventories WHERE id = $1`
-	err := r.db.QueryRow(sqlStatement, id)
+func (r *inventoryRepository) FindById(id int) (entity.InventoryStock, bool, error) {
+	var inventory entity.InventoryStock
+
+	sqlStatement := `
+	SELECT * FROM inventories
+	JOIN inventory_stocks ON inventories.id = inventory_stocks.inven_id
+	WHERE inventories.id = $1`
+	err := r.db.QueryRow(
+		sqlStatement,
+		id).Scan(
+		&inventory.InventoryId,
+		&inventory.CatId,
+		&inventory.Name,
+		&inventory.Description,
+		&inventory.IsAvailable,
+		&inventory.InvenCreatedAt,
+		&inventory.InvenUpdatedAt,
+		&inventory.StockId,
+		&inventory.InvenId,
+		&inventory.StockUnit,
+		&inventory.PricePerUnit,
+		&inventory.StockCreatedAt,
+		&inventory.StockUpdatedAt)
 	if err != nil {
-		return false, nil
+		return inventory, false, nil
 	}
 
-	return true, nil
+	return inventory, true, nil
 }
 
-func (r *inventoryRepository) FindByName(name string) (bool, error) {
-	sqlStatement := `SELECT * FROM inventories WHERE name = $1`
-	err := r.db.QueryRow(sqlStatement, name)
+func (r *inventoryRepository) FindByName(name string) (entity.Inventory, bool, error) {
+	var inventory entity.Inventory
+
+	sqlStatement := `SELECT id, name FROM inventories WHERE name = $1`
+	err := r.db.QueryRow(sqlStatement, name).Scan(&inventory.Id, &inventory.Name)
 	if err != nil {
-		return false, nil
+		return inventory, false, nil
 	}
 
-	return true, nil
+	return inventory, true, nil
 }
 
-func (r *inventoryRepository) Update(input entity.UpdateInventory) (entity.Inventory, entity.Stock, error) {
+func (r *inventoryRepository) Update(input entity.InventoryStock) (entity.Inventory, entity.Stock, error) {
 	var inventory entity.Inventory
 	var stock entity.Stock
 
@@ -101,7 +123,7 @@ func (r *inventoryRepository) Update(input entity.UpdateInventory) (entity.Inven
 	UPDATE inventory_stocks
 	SET stock_unit=$1, price_per_unit=$2, updated_at=$3
 	WHERE inven_id = $4
-	RETURNING stock_uni, price_per_unit`
+	RETURNING stock_unit, price_per_unit`
 
 	err := r.db.QueryRow(
 		sqlStatement,
@@ -110,7 +132,7 @@ func (r *inventoryRepository) Update(input entity.UpdateInventory) (entity.Inven
 		input.Description,
 		input.IsAvailable,
 		time.Now(),
-		input.Id).Scan(
+		input.InventoryId).Scan(
 		&inventory.Id,
 		&inventory.CatId,
 		&inventory.Name,
@@ -125,10 +147,10 @@ func (r *inventoryRepository) Update(input entity.UpdateInventory) (entity.Inven
 		sqlStatementStock,
 		input.StockUnit,
 		input.PricePerUnit,
-		time.Now()).Scan(
-		&inventory.Id,
-		&input.StockUnit,
-		&input.PricePerUnit)
+		time.Now(),
+		inventory.Id).Scan(
+		&stock.StockUnit,
+		&stock.PricePerUnit)
 
 	if err != nil {
 		return inventory, stock, err
@@ -161,7 +183,7 @@ func (r inventoryRepository) GetAll() ([]entity.InputInventory, error) {
 		return result, err
 	}
 
-	rows.Close()
+	defer rows.Close()
 	for rows.Next() {
 		var inventory entity.InputInventory
 		err = rows.Scan(

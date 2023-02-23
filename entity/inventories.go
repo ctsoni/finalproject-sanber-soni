@@ -40,3 +40,19 @@ type Stock struct {
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
 }
+
+type InventoryStock struct {
+	InventoryId    int
+	CatId          int
+	Name           string
+	Description    string
+	IsAvailable    bool
+	InvenCreatedAt time.Time
+	InvenUpdatedAt time.Time
+	StockId        int
+	InvenId        int
+	StockUnit      int
+	PricePerUnit   int
+	StockCreatedAt time.Time
+	StockUpdatedAt time.Time
+}
