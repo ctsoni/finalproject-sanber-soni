@@ -116,8 +116,8 @@ func (r *transactionRepository) UpdateStock(invenId int, unit int) error {
 func (r *transactionRepository) FindById(transactionId int) (entity.Transaction, error) {
 	var transaction entity.Transaction
 
-	sqlStatment := `SELECT * FROM transactions WHERE id = $1`
-	err := r.db.QueryRow(sqlStatment, transactionId).Scan(
+	sqlStatement := `SELECT * FROM transactions WHERE id = $1`
+	err := r.db.QueryRow(sqlStatement, transactionId).Scan(
 		&transaction.Id,
 		&transaction.UserId,
 		&transaction.InvenId,
@@ -245,8 +245,8 @@ func (r *transactionRepository) FindUserId(userID int) error {
 }
 
 func (r *transactionRepository) UpdateStockRetrieved(transaction entity.Transaction) error {
-	sqlStatemnt := `UPDATE transactions SET stock_retreived = $1, updated_at=$3 WHERE id = $2`
-	err := r.db.QueryRow(sqlStatemnt, transaction.StockRetrieved, transaction.Id, time.Now()).Err()
+	sqlStatement := `UPDATE transactions SET stock_retreived = $1, updated_at=$3 WHERE id = $2`
+	err := r.db.QueryRow(sqlStatement, transaction.StockRetrieved, transaction.Id, time.Now()).Err()
 	if err != nil {
 		return err
 	}

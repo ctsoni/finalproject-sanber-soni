@@ -160,7 +160,7 @@ func (h *ReviewHandler) DeleteReview(ctx *gin.Context) {
 		return
 	}
 
-	msg := gin.H{"message": "delete succes"}
+	msg := gin.H{"message": "delete success"}
 	response := helper.APIResponse("Delete review success", http.StatusOK, "success", msg)
 	ctx.JSON(http.StatusOK, response)
 }

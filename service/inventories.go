@@ -45,8 +45,8 @@ func (s *inventoryService) UpdateItem(input entity.UpdateInventory, isAdmin bool
 		return entity.Inventory{}, entity.Stock{}, errors.New("you're not authorized")
 	}
 
-	realInput, idExsit, _ := s.repository.FindById(id)
-	if !idExsit {
+	realInput, idExist, _ := s.repository.FindById(id)
+	if !idExist {
 		return entity.Inventory{}, entity.Stock{}, errors.New("inventory id not found")
 	}
 

@@ -211,6 +211,6 @@ func (h *TransactionHandler) UpdateAdmin(ctx *gin.Context) {
 		return
 	}
 
-	reponse := helper.APIResponse("Update by admin success and stock back up", http.StatusOK, "success", nil)
-	ctx.JSON(http.StatusOK, reponse)
+	response := helper.APIResponse("Update by admin success and stock back up", http.StatusOK, "success", nil)
+	ctx.JSON(http.StatusOK, response)
 }
