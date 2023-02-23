@@ -15,6 +15,8 @@ type TransactionService interface {
 	GetByStatus(userID int, status string) ([]entity.Transaction, error)
 	ValidateStatus(status string) error
 	TransactionDoneByAdmin(transId int, isAdmin bool) error
+	GetAllAdmin(isAdmin bool) ([]entity.Transaction, error)
+	GetByStatusAdmin(status string, isAdmin bool) ([]entity.Transaction, error)
 }
 
 type transactionService struct {
@@ -225,4 +227,30 @@ func (s *transactionService) TransactionDoneByAdmin(transId int, isAdmin bool) e
 	}
 
 	return nil
+}
+
+func (s *transactionService) GetAllAdmin(isAdmin bool) ([]entity.Transaction, error) {
+	if !isAdmin {
+		return nil, errors.New("you're not authorized")
+	}
+
+	transactions, err := s.repository.GetAllAdmin()
+	if err != nil {
+		return transactions, err
+	}
+
+	return transactions, nil
+}
+
+func (s *transactionService) GetByStatusAdmin(status string, isAdmin bool) ([]entity.Transaction, error) {
+	if !isAdmin {
+		return nil, errors.New("you're not authorized")
+	}
+
+	transactions, err := s.repository.GetByStatusAdmin(status)
+	if err != nil {
+		return transactions, err
+	}
+
+	return transactions, nil
 }

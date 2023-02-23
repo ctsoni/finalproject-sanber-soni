@@ -104,6 +104,25 @@ func (h *TransactionHandler) GetAll(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, response)
 }
 
+func (h *TransactionHandler) GetAllAdmin(ctx *gin.Context) {
+	currentUser := ctx.MustGet("currentUser").(entity.Users)
+
+	transactions, err := h.service.GetAllAdmin(currentUser.IsAdmin)
+	if err != nil {
+		errorMessage := gin.H{"error": err.Error()}
+		response := helper.APIResponse(
+			"Get all by admin transactions failed",
+			http.StatusBadRequest,
+			"error",
+			errorMessage)
+		ctx.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	response := helper.APIResponse("Get all by admin success", http.StatusOK, "success", transactions)
+	ctx.JSON(http.StatusOK, response)
+}
+
 func (h *TransactionHandler) GetByStatus(ctx *gin.Context) {
 	currentUser := ctx.MustGet("currentUser").(entity.Users)
 	status := ctx.Query("status")
@@ -132,6 +151,37 @@ func (h *TransactionHandler) GetByStatus(ctx *gin.Context) {
 	}
 
 	response := helper.APIResponse("Get by status success", http.StatusOK, "success", transactions)
+	ctx.JSON(http.StatusOK, response)
+}
+
+func (h *TransactionHandler) GetByStatusAdmin(ctx *gin.Context) {
+	currentUser := ctx.MustGet("currentUser").(entity.Users)
+	status := ctx.Query("status")
+	err := h.service.ValidateStatus(status)
+	if err != nil {
+		errorMessage := gin.H{"error": err.Error()}
+		response := helper.APIResponse(
+			"Get by status by admin transactions failed",
+			http.StatusBadRequest,
+			"error",
+			errorMessage)
+		ctx.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	transactions, err := h.service.GetByStatusAdmin(status, currentUser.IsAdmin)
+	if err != nil {
+		errorMessage := gin.H{"error": err.Error()}
+		response := helper.APIResponse(
+			"Get by status by admin transactions failed",
+			http.StatusBadRequest,
+			"error",
+			errorMessage)
+		ctx.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	response := helper.APIResponse("Get by status by admin success", http.StatusOK, "success", transactions)
 	ctx.JSON(http.StatusOK, response)
 }
 

@@ -19,6 +19,8 @@ type TransactionRepository interface {
 	GetByStatus(userID int, status string) ([]entity.Transaction, error)
 	FindUserId(userID int) error
 	UpdateStockRetrieved(transaction entity.Transaction) error
+	GetAllAdmin() ([]entity.Transaction, error)
+	GetByStatusAdmin(status string) ([]entity.Transaction, error)
 }
 
 type transactionRepository struct {
@@ -250,4 +252,74 @@ func (r *transactionRepository) UpdateStockRetrieved(transaction entity.Transact
 	}
 
 	return nil
+}
+
+func (r *transactionRepository) GetAllAdmin() ([]entity.Transaction, error) {
+	var result []entity.Transaction
+
+	sqlStatement := `SELECT * FROM transactions`
+	rows, err := r.db.Query(sqlStatement)
+	if err != nil {
+		return result, err
+	}
+
+	defer rows.Close()
+	for rows.Next() {
+		var transaction entity.Transaction
+		err = rows.Scan(&transaction.Id,
+			&transaction.UserId,
+			&transaction.InvenId,
+			&transaction.Unit,
+			&transaction.TotalPrice,
+			&transaction.Status,
+			&transaction.StartAt,
+			&transaction.FinishAt,
+			&transaction.CreatedAt,
+			&transaction.UpdatedAt,
+			&transaction.ExpiredAt,
+			&transaction.StockRetrieved)
+
+		if err != nil {
+			return result, err
+		}
+
+		result = append(result, transaction)
+	}
+
+	return result, nil
+}
+
+func (r *transactionRepository) GetByStatusAdmin(status string) ([]entity.Transaction, error) {
+	var result []entity.Transaction
+
+	sqlStatement := `SELECT * FROM transactions WHERE status = $1`
+	rows, err := r.db.Query(sqlStatement, status)
+	if err != nil {
+		return result, err
+	}
+
+	defer rows.Close()
+	for rows.Next() {
+		var transaction entity.Transaction
+		err = rows.Scan(&transaction.Id,
+			&transaction.UserId,
+			&transaction.InvenId,
+			&transaction.Unit,
+			&transaction.TotalPrice,
+			&transaction.Status,
+			&transaction.StartAt,
+			&transaction.FinishAt,
+			&transaction.CreatedAt,
+			&transaction.UpdatedAt,
+			&transaction.ExpiredAt,
+			&transaction.StockRetrieved)
+
+		if err != nil {
+			return result, err
+		}
+
+		result = append(result, transaction)
+	}
+
+	return result, nil
 }

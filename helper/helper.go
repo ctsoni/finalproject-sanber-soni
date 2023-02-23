@@ -185,3 +185,27 @@ func FormatTransactionResponse(transaction entity.Transaction, item string, info
 
 	return response
 }
+
+type OutputReview struct {
+	ID        int
+	User      string
+	Item      string
+	TransID   int
+	Review    string
+	Rating    int
+	UpdatedAt time.Time
+}
+
+func FormatReviewResponse(review entity.Review, user string, item string) OutputReview {
+	response := OutputReview{
+		ID:        review.Id,
+		User:      user,
+		Item:      item,
+		TransID:   review.TransId,
+		Review:    review.Review,
+		Rating:    review.Rating,
+		UpdatedAt: review.UpdatedAt,
+	}
+
+	return response
+}

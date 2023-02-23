@@ -97,5 +97,22 @@ func main() {
 	// misal /1?action=pay atau /1?action=cancel
 	transaction.PUT("/:trans_id", auth.MiddlewareUserAuth(userService), transactionHandler.UpdateTransaction)
 	transaction.PUT("/admin/:trans_id", auth.MiddlewareUserAuth(userService), transactionHandler.UpdateAdmin)
+	// admin
+	transaction.GET("/admin/get-all", auth.MiddlewareUserAuth(userService), transactionHandler.GetAllAdmin)
+	transaction.GET("/admin/get", auth.MiddlewareUserAuth(userService), transactionHandler.GetByStatusAdmin)
+
+	// reviews endpoint handler
+	reviewRepository := repository.NewReviewRepository(db)
+	reviewService := service.NewReviewService(reviewRepository)
+	reviewHanlder := controllers.NewReviewHandler(reviewService)
+	review := r.Group("/review")
+	// user
+	review.GET("/get-all", reviewHanlder.GetAll)
+	review.GET("/get-by-user/:user_id", reviewHanlder.GetByUserID)
+	review.GET("/get-by-inven/:inven_id", reviewHanlder.GetByInvenID)
+	users.POST("/review/add/:trans_id", auth.MiddlewareUserAuth(userService), reviewHanlder.AddReview)
+	users.PUT("/review/edit/:review_id", auth.MiddlewareUserAuth(userService), reviewHanlder.EditReview)
+	users.DELETE("/review/delete/:review_id", auth.MiddlewareUserAuth(userService), reviewHanlder.DeleteReview)
+
 	r.Run("127.0.0.1:8080")
 }
