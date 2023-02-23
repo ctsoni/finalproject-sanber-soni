@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func StartServer() {
+func StartServer(root string) {
 
 	r := gin.Default()
 	users := r.Group("/users")
@@ -41,7 +41,7 @@ func StartServer() {
 	category.PUT("/edit/:category_id", auth.MiddlewareUserAuth(userService), categoryHandler.UpdateCategory)
 	category.DELETE("/delete/:category_id", auth.MiddlewareUserAuth(userService), categoryHandler.DeleteCategories)
 
-	// invenotry endpoint handler
+	// inventory endpoint handler
 	inventoryRepository := repository.NewInventoryRepository(db)
 	inventoryService := service.NewInventoryService(inventoryRepository)
 	inventoryHandler := controllers.NewInventoryHandler(inventoryService)
@@ -72,14 +72,14 @@ func StartServer() {
 	// reviews endpoint handler
 	reviewRepository := repository.NewReviewRepository(db)
 	reviewService := service.NewReviewService(reviewRepository)
-	reviewHanlder := controllers.NewReviewHandler(reviewService)
+	reviewHandler := controllers.NewReviewHandler(reviewService)
 	// user
-	review.GET("/get-all", reviewHanlder.GetAll)
-	review.GET("/get-by-user/:user_id", reviewHanlder.GetByUserID)
-	review.GET("/get-by-inven/:inven_id", reviewHanlder.GetByInvenID)
-	review.POST("/add/:trans_id", auth.MiddlewareUserAuth(userService), reviewHanlder.AddReview)
-	review.PUT("/edit/:review_id", auth.MiddlewareUserAuth(userService), reviewHanlder.EditReview)
-	review.DELETE("/delete/:review_id", auth.MiddlewareUserAuth(userService), reviewHanlder.DeleteReview)
+	review.GET("/get-all", reviewHandler.GetAll)
+	review.GET("/get-by-user/:user_id", reviewHandler.GetByUserID)
+	review.GET("/get-by-inven/:inven_id", reviewHandler.GetByInvenID)
+	review.POST("/add/:trans_id", auth.MiddlewareUserAuth(userService), reviewHandler.AddReview)
+	review.PUT("/edit/:review_id", auth.MiddlewareUserAuth(userService), reviewHandler.EditReview)
+	review.DELETE("/delete/:review_id", auth.MiddlewareUserAuth(userService), reviewHandler.DeleteReview)
 
-	r.Run("127.0.0.1:8080")
+	r.Run(root)
 }

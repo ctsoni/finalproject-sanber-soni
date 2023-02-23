@@ -7,6 +7,7 @@ import (
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"log"
+	"os"
 )
 
 var (
@@ -20,11 +21,11 @@ func main() {
 		log.Fatal(err)
 	}
 	psqlInfo := fmt.Sprintf("host=%v port=%v user=%v password=%v dbname=%v sslmode=disable",
-		"localhost",
-		5432,
-		"postgres",
-		"postgres",
-		"cobafp2")
+		os.Getenv("PGHOST"),
+		os.Getenv("PGPORT"),
+		os.Getenv("PGUSER"),
+		os.Getenv("PGPASSWORD"),
+		os.Getenv("PGDATABASE"))
 
 	// connect into postgresql database
 	db, err = sql.Open("postgres", psqlInfo)
@@ -41,5 +42,5 @@ func main() {
 	defer db.Close()
 
 	// start routers from routers.go
-	StartServer()
+	StartServer(":" + os.Getenv("PORT"))
 }
