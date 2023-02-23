@@ -17,7 +17,7 @@ func NewReviewHandler(service service.ReviewService) *ReviewHandler {
 	return &ReviewHandler{service}
 }
 
-func (h ReviewHandler) AddReview(ctx *gin.Context) {
+func (h *ReviewHandler) AddReview(ctx *gin.Context) {
 	var input entity.InputReview
 	currentUser := ctx.MustGet("currentUser").(entity.Users)
 
@@ -75,7 +75,7 @@ func (h ReviewHandler) AddReview(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, response)
 }
 
-func (h ReviewHandler) EditReview(ctx *gin.Context) {
+func (h *ReviewHandler) EditReview(ctx *gin.Context) {
 	var input entity.InputReview
 	currentUser := ctx.MustGet("currentUser").(entity.Users)
 
@@ -133,7 +133,7 @@ func (h ReviewHandler) EditReview(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, response)
 }
 
-func (h ReviewHandler) DeleteReview(ctx *gin.Context) {
+func (h *ReviewHandler) DeleteReview(ctx *gin.Context) {
 	currentUser := ctx.MustGet("currentUser").(entity.Users)
 
 	reviewID, err := strconv.Atoi(ctx.Param("review_id"))
@@ -165,7 +165,7 @@ func (h ReviewHandler) DeleteReview(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, response)
 }
 
-func (h ReviewHandler) GetAll(ctx *gin.Context) {
+func (h *ReviewHandler) GetAll(ctx *gin.Context) {
 	reviews, err := h.service.GetAll()
 	if err != nil {
 		errorMessage := gin.H{"error": err.Error()}
@@ -182,7 +182,7 @@ func (h ReviewHandler) GetAll(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, response)
 }
 
-func (h ReviewHandler) GetByUserID(ctx *gin.Context) {
+func (h *ReviewHandler) GetByUserID(ctx *gin.Context) {
 	userID, err := strconv.Atoi(ctx.Param("user_id"))
 	if err != nil {
 		errorMessage := gin.H{"error": err.Error()}
@@ -211,7 +211,7 @@ func (h ReviewHandler) GetByUserID(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, response)
 }
 
-func (h ReviewHandler) GetByInvenID(ctx *gin.Context) {
+func (h *ReviewHandler) GetByInvenID(ctx *gin.Context) {
 	invenID, err := strconv.Atoi(ctx.Param("inven_id"))
 	if err != nil {
 		errorMessage := gin.H{"error": err.Error()}

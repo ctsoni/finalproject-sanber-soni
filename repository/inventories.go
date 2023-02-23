@@ -170,7 +170,7 @@ func (r *inventoryRepository) Delete(inventory entity.Inventory) error {
 	return nil
 }
 
-func (r inventoryRepository) GetAll() ([]entity.InputInventory, error) {
+func (r *inventoryRepository) GetAll() ([]entity.InputInventory, error) {
 	var result []entity.InputInventory
 
 	sqlStatement := `
@@ -204,7 +204,7 @@ func (r inventoryRepository) GetAll() ([]entity.InputInventory, error) {
 	return result, nil
 }
 
-func (r inventoryRepository) GetById(id int) (entity.InputInventory, error) {
+func (r *inventoryRepository) GetById(id int) (entity.InputInventory, error) {
 	var inventory entity.InputInventory
 
 	sqlStatement := `

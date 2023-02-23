@@ -6,7 +6,6 @@ import (
 	"time"
 )
 
-// UserRepository is contract to interact with database
 type UserRepository interface {
 	Save(user entity.Users) (entity.Users, error)
 	FindByEmail(email string) (entity.Users, bool, error)
@@ -16,17 +15,14 @@ type UserRepository interface {
 	GetAll() ([]entity.Users, error)
 }
 
-// userRepository is object that has db *sql.DB value
 type userRepository struct {
 	db *sql.DB
 }
 
-// NewUserRepository create new userRepository object that has db *sql.DB value
 func NewUserRepository(db *sql.DB) *userRepository {
 	return &userRepository{db}
 }
 
-// Save is userRepository method to save user into database
 func (r *userRepository) Save(user entity.Users) (entity.Users, error) {
 	sqlStatement := `
 	INSERT INTO users (full_name, email, password_hash) 
@@ -50,7 +46,6 @@ func (r *userRepository) Save(user entity.Users) (entity.Users, error) {
 	return user, nil
 }
 
-// FindByEmail is userRepository method to find if email already exist on database
 func (r *userRepository) FindByEmail(email string) (entity.Users, bool, error) {
 	var user entity.Users
 
@@ -68,7 +63,6 @@ func (r *userRepository) FindByEmail(email string) (entity.Users, bool, error) {
 	return user, true, nil
 }
 
-// FindById is userRepository method to search user id and return all its information
 func (r *userRepository) FindById(id int) (entity.Users, error) {
 	var user entity.Users
 
@@ -88,7 +82,6 @@ func (r *userRepository) FindById(id int) (entity.Users, error) {
 	return user, nil
 }
 
-// Update is userRepository method to update user information by id
 func (r *userRepository) Update(user entity.Users) (entity.Users, error) {
 
 	sqlStatement := `

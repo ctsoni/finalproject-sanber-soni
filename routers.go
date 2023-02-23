@@ -59,10 +59,10 @@ func StartServer() {
 	transactionHandler := controllers.NewTransactionHandler(transactionService)
 	// user
 	transaction.GET("/get-all", auth.MiddlewareUserAuth(userService), transactionHandler.GetAll)
-	// /get?status=Paid
+	// example /get?status=Paid
 	transaction.GET("/get", auth.MiddlewareUserAuth(userService), transactionHandler.GetByStatus)
 	transaction.POST("/create", auth.MiddlewareUserAuth(userService), transactionHandler.CreateTransaction)
-	// misal /1?action=pay atau /1?action=cancel
+	// example /1?action=pay or /1?action=cancel
 	transaction.PUT("/:trans_id", auth.MiddlewareUserAuth(userService), transactionHandler.UpdateTransaction)
 	transaction.PUT("/admin/:trans_id", auth.MiddlewareUserAuth(userService), transactionHandler.UpdateAdmin)
 	// admin

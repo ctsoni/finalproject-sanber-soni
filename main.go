@@ -26,6 +26,7 @@ func main() {
 		"postgres",
 		"cobafp2")
 
+	// connect into postgresql database
 	db, err = sql.Open("postgres", psqlInfo)
 	err = db.Ping()
 	if err != nil {
@@ -35,8 +36,10 @@ func main() {
 
 	fmt.Println("Successfully make connection to database")
 
+	// database migration
 	database.DbMigrate(db)
 	defer db.Close()
 
+	// start routers from routers.go
 	StartServer()
 }

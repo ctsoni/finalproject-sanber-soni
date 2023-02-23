@@ -9,17 +9,14 @@ import (
 	"net/http"
 )
 
-// userHandler is object that has userService field with type of service.userService interface contract
 type userHandler struct {
 	userService service.UserService
 }
 
-// NewUserHandler is function to create new userHandler object
 func NewUserHandler(userService service.UserService) *userHandler {
 	return &userHandler{userService}
 }
 
-// RegisterUser is userHandler method to serve as gin.HandlerFunc for registering user endpoint
 func (h *userHandler) RegisterUser(ctx *gin.Context) {
 	var input entity.InputRegisterUsers
 
@@ -64,7 +61,6 @@ func (h *userHandler) RegisterUser(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, response)
 }
 
-// Login is userHandler method to serve as gin.HandlerFunc for login user endpoint
 func (h *userHandler) Login(ctx *gin.Context) {
 	var input entity.InputLogin
 
