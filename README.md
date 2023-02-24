@@ -7,7 +7,7 @@ Simple Hike and Camp Stuff Rental API made with Gin and Postgresql
 
 ## ERD
 * dbdiagram : https://dbdiagram.io/d/63f49b28296d97641d828f6a
-![ERD] (/img/ERDFinalProject.png)
+![image](/img/ERDFinalProject.png)
 
 ## API
 The full documentation of the API can be viewed on [postman documentation](https://documenter.getpostman.com/view/25656509/2s93CNMtFD) above.
