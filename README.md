@@ -5,6 +5,24 @@ Simple Hike and Camp Stuff Rental API made with Gin and Postgresql
 * Postman : https://documenter.getpostman.com/view/25656509/2s93CNMtFD
 * Slides  : https://docs.google.com/presentation/d/1kTdb4B7ZtmlzIEEz91bV6CD8hW7-bZhhHiBZ-kk4jN8/edit?usp=sharing
 
+## Key Functionalities
+1. User Account Management:
+* Implemented user registration, enabling users to create accounts with ease.
+* Developed functionality for users to delete their accounts and manage their account details.
+* Ensured data privacy and security through JWT (JSON Web Tokens) authentication.
+2. Role-based Access Control:
+* Employed role-based access control to differentiate between admin and normal users.
+* Admin users were granted special privileges, allowing them to edit specific tables, such as the inventory table.
+3. Inventory Management:
+* Designed and maintained an "inventory" table to manage the availability of hiking and camping equipment.
+* Admin users could efficiently update the inventory in real-time, ensuring accurate and up-to-date equipment availability.
+4. Transaction Handling:
+* Implemented a seamless transaction process, enabling users to rent hiking and camping equipment effortlessly.
+* Users could initiate transactions and receive detailed receipts with relevant information.
+5. Review System:
+* Introduced a review system, enabling users to provide feedback and ratings after completing transactions.
+* Enhanced user engagement and fostered a sense of community through user-generated reviews.
+
 ## ERD
 * dbdiagram : https://dbdiagram.io/d/63f49b28296d97641d828f6a
 ![image](/img/ERDFinalProject.png)
